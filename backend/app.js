@@ -5,14 +5,13 @@ const cors = require('cors');
 const userRoutes = require('./routes/userRoutes');
 const taskRoutes = require('./routes/taskRoutes'); // Add this line
 const dotenv = require('dotenv');
-
 dotenv.config();
 
 const app = express();
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173', // Replace with your frontend URL
+  origin: ['http://localhost:5173','https://ai-study-planner-frontend.vercel.app/'],
   credentials: true,
 }));
 app.use(express.json());
@@ -23,7 +22,6 @@ app.use('/uploads', express.static('uploads'));
 // Routes
 app.use('/api/users', userRoutes);
 app.use('/api', taskRoutes); // Add this line
-
 
 // Error Handling Middleware
 app.use((err, req, res, next) => {
