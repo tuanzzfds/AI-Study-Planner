@@ -1,0 +1,50 @@
+/* Login.css */
+
+.login-container {
+  background-color: #f0f9ff; /* Light background color */
+}
+
+.login-form {
+  background: #fff;
+}
+
+.login-form h2 {
+  font-weight: 600;
+}
+
+.login-form .form-label {
+  font-weight: 500;
+}
+
+.login-form .btn-primary {
+  background: linear-gradient(to right, #36d1dc, #5b86e5);
+  border: none;
+}
+
+.login-form .btn-danger {
+  background: #de5246;
+  border: none;
+}
+
+.login-form .text-center span {
+  color: #555;
+}
+
+.login-form .text-center a {
+  text-decoration: none;
+  color: #007bff;
+}
+
+.login-form .text-center a:hover {
+  text-decoration: underline;
+}
+
+.login-container .min-vh-100 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-form .fab.fa-google {
+  font-size: 1.2rem;
+}
