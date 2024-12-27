@@ -233,19 +233,25 @@ const CalendarPage = () => {
         return;
       }
   
-      // Existing logic for non-completed tasks
       const now = new Date();
-      let newStatus = event.status;
+      let newStatus;
   
-      if (end < now) {
+      // Check if the task period includes current time
+      if (start <= now && end >= now) {
+        newStatus = 'In Progress';
+      } else if (end < now) {
         newStatus = 'Expired';
       } else if (start > now) {
         newStatus = 'Not Started';
-      } else if (start <= now && end > now) {
-        newStatus = 'In Progress';
       }
   
-      const updatedEvent = { ...event, start: new Date(start), end: new Date(end), allDay: droppedOnAllDaySlot, status: newStatus };
+      const updatedEvent = { 
+        ...event, 
+        start: new Date(start), 
+        end: new Date(end), 
+        allDay: droppedOnAllDaySlot, 
+        status: newStatus 
+      };
   
       setEvents((prevEvents) =>
         prevEvents.map((evt) => (evt.id === event.id ? updatedEvent : evt))
