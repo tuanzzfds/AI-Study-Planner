@@ -107,3 +107,74 @@
   margin-left: 250px; /* Width of the sidebar */
   padding: 20px;
 }
+/* Add dark theme styles */
+.dark-theme .tasks-page-container {
+  background-color: var(--background-dark);
+  color: var(--text-dark);
+}
+
+.dark-theme .task-card {
+  background-color: var(--card-dark);
+  border-color: #444;
+  color: var(--text-dark);
+}
+
+.dark-theme .task-description {
+  color: #aaa;
+}
+
+.dark-theme .task-controls input,
+.dark-theme .task-controls select {
+  background-color: var(--card-dark);
+  border-color: #444;
+  color: var(--text-dark);
+}
+
+.dark-theme .task-controls input::placeholder {
+  color: #888;
+}
+
+.dark-theme .btn-outline-secondary {
+  color: var(--text-dark);
+  border-color: #444;
+}
+
+.dark-theme .btn-outline-secondary:hover {
+  background-color: #444;
+  color: var(--text-dark);
+}
+
+/* Improve task status and priority badges for dark theme */
+.dark-theme .task-status,
+.dark-theme .task-priority {
+  opacity: 0.9;
+}
+
+/* Modal dark theme */
+.dark-theme .modal-content {
+  background-color: var(--card-dark);
+  color: var(--text-dark);
+}
+
+.dark-theme .modal-header {
+  border-bottom-color: #444;
+}
+
+.dark-theme .modal-footer {
+  border-top-color: #444;
+}
+
+/* Task actions dark theme */
+.dark-theme .task-actions .edit-icon,
+.dark-theme .task-actions .delete-icon,
+.dark-theme .task-actions .ai-update-icon,
+.dark-theme .task-actions .ai-delete-icon {
+  color: #aaa;
+}
+
+.dark-theme .task-actions .edit-icon:hover,
+.dark-theme .task-actions .delete-icon:hover,
+.dark-theme .task-actions .ai-update-icon:hover,
+.dark-theme .task-actions .ai-delete-icon:hover {
+  color: var(--text-dark);
+}

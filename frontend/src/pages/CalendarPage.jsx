@@ -124,11 +124,7 @@ const CalendarPage = () => {
   }, [isTimerRunning, selectedEvent]);
 
   const handleStartTimer = () => {
-    // Check if task is in progress
-    if (selectedEvent.status !== 'In Progress') {
-      alert('Timer can only be started for tasks that are In Progress');
-      return;
-    }
+    // Removed the status check to allow timer for any task
     setRemainingTime(timerDuration * 60);
     setIsTimerRunning(true);
   };
@@ -343,7 +339,6 @@ const CalendarPage = () => {
               {!isTimerRunning && !isBreak && (
                 <>
                   <h5>Start Focus Timer</h5>
-                  {selectedEvent.status === 'In Progress' ? (
                     <>
                       <div>
                         <label>Focus Duration (minutes): </label>
@@ -356,9 +351,6 @@ const CalendarPage = () => {
                       </div>
                       <Button onClick={handleStartTimer}>Start Timer</Button>
                     </>
-                  ) : (
-                    <p>Timer can only be started for tasks that are In Progress</p>
-                  )}
                 </>
               )}
               {isBreak && (

@@ -221,7 +221,7 @@ const TasksPage = () => {
 
         {/* Task Update Modal */}
         {selectedTask && (
-        <Modal show={showModal} onHide={handleCloseModal}>
+        <Modal show={showModal} onHide={handleCloseModal} className="dark-theme-modal">
           <Modal.Header closeButton>
             <Modal.Title>{isEditing ? 'Edit Task' : 'Task Details'}</Modal.Title>
           </Modal.Header>

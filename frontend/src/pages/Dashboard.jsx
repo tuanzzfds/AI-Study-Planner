@@ -2,6 +2,7 @@ import './Dashboard.css'; // local CSS
 import axios from 'axios';
 import Sidebar from '../components/Sidebar';
 import {FaPlus } from 'react-icons/fa';
+import AIAgentControls from '../components/AIAgentControls';
 import TaskList from '../components/TaskList'; // Import TaskList component
 import { Button } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
@@ -139,6 +140,7 @@ const Dashboard = () => {
           <div className="top-header-left">
             <div className="time-info">{timeStr}</div>
             <div className="date-info">{dateStr}</div>
+            <AIAgentControls />
           </div>
         </div>
 
@@ -179,9 +181,9 @@ const Dashboard = () => {
               ) : (
             <p>No items found.</p>
           )}
-            </div>
+          </div>
 
-            <div className="upcoming-tasks-section">
+          <div className="upcoming-tasks-section">
           <h2>Upcoming Tasks</h2>
           {upcomingTasks.length > 0 ? (
             <ul className="upcoming-tasks-list">

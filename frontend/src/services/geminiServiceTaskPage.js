@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { config } from '../config/config';
-
+import axios from 'axios';
 const apiKey = config.geminiApiKey;
 
 if (!apiKey) {
@@ -74,6 +74,69 @@ export const analyzeAnalytics = async (dailyData, taskStatusData, progressPercen
     return result.response.text();
   } catch (error) {
     console.error('Error analyzing analytics:', error);
+    throw error;
+  }
+};
+export const createTask = async (taskData) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.post('http://localhost:5000/api/ai/tasks/create', taskData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data.task;
+  } catch (error) {
+    console.error('Error creating task:', error);
+    throw error;
+  }
+};
+
+export const updateTask = async (taskId, updates) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.put(`http://localhost:5000/api/ai/tasks/update/${taskId}`, updates, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data.task;
+  } catch (error) {
+    console.error('Error updating task:', error);
+    throw error;
+  }
+};
+
+export const deleteTask = async (taskId) => {
+  try {
+    const token = localStorage.getItem('token');
+    await axios.delete(`http://localhost:5000/api/ai/tasks/delete/${taskId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+  } catch (error) {
+    console.error('Error deleting task:', error);
+    throw error;
+  }
+};
+
+export const startTimer = async (taskId, duration) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.post('http://localhost:5000/api/ai/timer/start', { taskId, duration }, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data.timer;
+  } catch (error) {
+    console.error('Error starting timer:', error);
+    throw error;
+  }
+};
+
+export const stopTimer = async (timerId) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.post('http://localhost:5000/api/ai/timer/stop', { timerId }, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response.data.timer;
+  } catch (error) {
+    console.error('Error stopping timer:', error);
     throw error;
   }
 };

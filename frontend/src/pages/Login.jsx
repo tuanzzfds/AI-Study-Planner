@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
 import { auth, googleProvider } from '../services/firebase'; // adjust path as needed
-import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { signInWithEmailAndPassword, signInWithPopup, getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { useNavigate, Link } from 'react-router-dom';
 import './Login.css';
 
@@ -37,12 +37,20 @@ const Login = () => {
     setError('');
     setLoading(true);
     try {
-      const result = await signInWithPopup(auth, googleProvider);
+      const auth = getAuth();
+      auth.settings = { ...auth.settings, appVerificationDisabledForTesting: true };
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({
+        prompt: 'select_account'
+      });
+      
+      const result = await signInWithPopup(auth, provider);
       const token = await result.user.getIdToken();
       localStorage.setItem('token', token);
       navigate('/dashboard');
     } catch (error) {
-      setError(error.message);
+      console.error('Google login error:', error);
+      setError('Failed to login with Google. Please try again.');
     } finally {
       setLoading(false);
     }
