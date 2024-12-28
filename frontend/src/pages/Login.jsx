@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Container, Row, Col, Form, Button, Alert } from 'react-bootstrap';
-import { auth, googleProvider } from '../services/firebase'; // adjust path as needed
+import { auth } from '../services/firebase'; // adjust path as needed
 import { signInWithEmailAndPassword, signInWithPopup, getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { useNavigate, Link } from 'react-router-dom';
 import './Login.css';
+import { validateEmail, validatePassword } from '../utils/validation';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -16,6 +17,23 @@ const Login = () => {
     e.preventDefault();
     setError('');
     setLoading(true);
+
+    // Validate fields
+    const emailValidation = validateEmail(email);
+    const passwordValidation = validatePassword(password);
+
+    if (!emailValidation.isValid) {
+      setError(emailValidation.message);
+      setLoading(false);
+      return;
+    }
+
+    if (!passwordValidation.isValid) {
+      setError(passwordValidation.message);
+      setLoading(false);
+      return;
+    }
+
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const token = await userCredential.user.getIdToken();

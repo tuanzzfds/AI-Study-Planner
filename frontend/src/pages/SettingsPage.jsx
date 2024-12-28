@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Container, Row, Col, Form, Button, Alert, Image } from 'react-bootstrap';
 import Sidebar from '../components/Sidebar';
 import axios from 'axios';
+import { validateName, validatePassword } from '../utils/validation';
 
 const SettingsPage = () => {
   const [fullName, setFullName] = useState('');
@@ -10,11 +11,38 @@ const SettingsPage = () => {
   const [profilePicture, setProfilePicture] = useState(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [validationErrors, setValidationErrors] = useState({});
+
+  const validateInputs = () => {
+    const errors = {};
+    
+    if (fullName) {
+      const nameValidation = validateName(fullName);
+      if (!nameValidation.isValid) {
+        errors.fullName = nameValidation.message;
+      }
+    }
+
+    if (password) {
+      const passwordValidation = validatePassword(password);
+      if (!passwordValidation.isValid) {
+        errors.password = passwordValidation.message;
+      }
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSave = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
+    
+    if (!validateInputs()) {
+      setError('Please correct the validation errors');
+      return;
+    }
 
     try {
       const token = localStorage.getItem('token');
@@ -44,7 +72,6 @@ const SettingsPage = () => {
       setError(err.response?.data?.message || 'Failed to update profile');
     }
   };
-
 
   return (
     <>
@@ -81,8 +108,11 @@ const SettingsPage = () => {
                       type="text" 
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      required
+                      isInvalid={!!validationErrors.fullName}
                     />
+                    <Form.Control.Feedback type="invalid">
+                      {validationErrors.fullName}
+                    </Form.Control.Feedback>
                   </Col>
                 </Form.Group>
 
@@ -93,7 +123,11 @@ const SettingsPage = () => {
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      isInvalid={!!validationErrors.password}
                     />
+                    <Form.Control.Feedback type="invalid">
+                      {validationErrors.password}
+                    </Form.Control.Feedback>
                   </Col>
                 </Form.Group>
 

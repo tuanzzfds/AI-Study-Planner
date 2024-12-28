@@ -13,7 +13,6 @@ import { useEffect, useState } from 'react';
 import UserProfile from './pages/UserProfile';
 import TaskPage from './pages/TaskPage';
 import AnalyticsPage from './pages/AnalyticsPage';
-
 const App = () => {
   const [currentUser, setCurrentUser] = useState(null);
 

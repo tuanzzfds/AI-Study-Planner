@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { TextField, Button, MenuItem } from '@mui/material';
+import { TextField, Button, MenuItem, Alert } from '@mui/material';
 import axios from 'axios';
+import { validateTaskTitle, validateTaskDescription, validateDateRange, validatePriority, validateStatus } from '../utils/validation';
 
 const AddTaskForm = ({ onTaskAdded }) => {
   const [title, setTitle] = useState('');
@@ -9,9 +10,46 @@ const AddTaskForm = ({ onTaskAdded }) => {
   const [priority, setPriority] = useState('Low');
   const [status, setStatus] = useState('Pending');
   const [startDate, setStartDate] = useState('');
-const [endDate, setEndDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  const [error, setError] = useState('');
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
+    // Validate inputs
+    const titleValidation = validateTaskTitle(title);
+    if (!titleValidation.isValid) {
+      setError(titleValidation.message);
+      return;
+    }
+
+    const descValidation = validateTaskDescription(description);
+    if (!descValidation.isValid) {
+      setError(descValidation.message);
+      return;
+    }
+
+    const priorityValidation = validatePriority(priority);
+    if (!priorityValidation.isValid) {
+      setError(priorityValidation.message);
+      return;
+    }
+
+    const statusValidation = validateStatus(status);
+    if (!statusValidation.isValid) {
+      setError(statusValidation.message);
+      return;
+    }
+
+    if (startDate && endDate) {
+      const dateValidation = validateDateRange(startDate, endDate);
+      if (!dateValidation.isValid) {
+        setError(dateValidation.message);
+        return;
+      }
+    }
+
     try {
       const token = localStorage.getItem('token');
       await axios.post('http://localhost:5000/api/tasks', {
@@ -19,7 +57,7 @@ const [endDate, setEndDate] = useState('');
         description,
         priority,
         status,
-        startDate, // Added
+        startDate,
         endDate,
       }, {
         headers: { Authorization: `Bearer ${token}` },
@@ -28,17 +66,18 @@ const [endDate, setEndDate] = useState('');
       setDescription('');
       setPriority('Low');
       setStatus('Pending');
-      setStartDate(''); // Reset
-      setEndDate('');   // Reset
+      setStartDate('');
+      setEndDate('');
       onTaskAdded();
     } catch (error) {
       console.error('Error adding task:', error);
-      alert('Failed to add task. Please try again.');
+      setError('Failed to add task. Please try again.');
     }
   };
 
   return (
     <form onSubmit={handleSubmit} className="mb-6">
+      {error && <Alert severity="error" className="mb-4">{error}</Alert>}
       <TextField
         label="Title"
         variant="outlined"

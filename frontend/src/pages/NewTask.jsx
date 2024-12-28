@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 import Sidebar from '../components/Sidebar';
+import { validateTaskTitle, validateTaskDescription, validateDateRange } from '../utils/validation';
 
 const NewTask = () => {
   const [title, setTitle] = useState('');
@@ -26,6 +27,25 @@ const NewTask = () => {
     e.preventDefault();
     setError('');
     setSuccess('');
+
+    // Validate inputs
+    const titleValidation = validateTaskTitle(title);
+    if (!titleValidation.isValid) {
+      setError(titleValidation.message);
+      return;
+    }
+
+    const descValidation = validateTaskDescription(details);
+    if (!descValidation.isValid) {
+      setError(descValidation.message);
+      return;
+    }
+
+    const dateValidation = validateDateRange(startDate, endDate);
+    if (!dateValidation.isValid) {
+      setError(dateValidation.message);
+      return;
+    }
 
     try {
       const token = localStorage.getItem('token');

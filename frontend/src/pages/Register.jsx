@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 // Add FontAwesome imports
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBook } from '@fortawesome/free-solid-svg-icons';
+import { validateEmail, validatePassword, validateName } from '../utils/validation';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -18,19 +19,26 @@ const Register = () => {
     e.preventDefault();
     setError('');
 
-    // Simple front-end validation example
-    if (!email.trim()) {
-      setError('Please enter a valid email.');
+    // Validate all fields
+    const emailValidation = validateEmail(email);
+    const nameValidation = validateName(fullName);
+    const passwordValidation = validatePassword(password);
+
+    if (!emailValidation.isValid) {
+      setError(emailValidation.message);
       return;
     }
-    if (!fullName.trim()) { // Validate fullName
-      setError('Please enter your full name.');
+
+    if (!nameValidation.isValid) {
+      setError(nameValidation.message);
       return;
     }
-    if (!password || !confirmPassword) {
-      setError('Please fill out both password fields.');
+
+    if (!passwordValidation.isValid) {
+      setError(passwordValidation.message);
       return;
     }
+
     if (password !== confirmPassword) {
       setError('Passwords do not match.');
       return;
