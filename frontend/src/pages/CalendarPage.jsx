@@ -16,8 +16,6 @@ import axios from 'axios'; // Added axios for API calls
 const locales = {
   'en-US': enUS
 };
-
-// Configure date-fns localizer for react-big-calendar
 const localizer = dateFnsLocalizer({
   format,
   parse,
@@ -26,20 +24,19 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-const DnDCalendar = withDragAndDrop(Calendar); // Wrapped Calendar with Drag and Drop
+const DnDCalendar = withDragAndDrop(Calendar);
 
 const CalendarPage = () => {
   const [view, setView] = useState('month');
   const [events, setEvents] = useState([]);
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [showModal, setShowModal] = useState(false);
-  const [timerDuration, setTimerDuration] = useState(25); // Focus timer duration in minutes
-  const [breakDuration, setBreakDuration] = useState(5); // Break timer duration in minutes
+  const [timerDuration, setTimerDuration] = useState(25);
+  const [breakDuration, setBreakDuration] = useState(5);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [remainingTime, setRemainingTime] = useState(timerDuration * 60);
   const [isBreak, setIsBreak] = useState(false);
 
-  // Add styles for the overlay at the top of the component
   const overlayStyle = {
     position: 'fixed',
     top: 0,
@@ -60,7 +57,6 @@ const CalendarPage = () => {
     marginBottom: '20px',
   };
 
-  // Function to get event style
   const eventStyleGetter = (event) => {
     let backgroundColor = '#3174ad'; // Default color for other statuses
 
@@ -98,7 +94,7 @@ const CalendarPage = () => {
     if ("Notification" in window) {
       Notification.requestPermission();
     }
-    
+
     let timerInterval;
     if (isTimerRunning) {
       timerInterval = setInterval(() => {
@@ -143,14 +139,14 @@ const CalendarPage = () => {
         icon: "/favicon.ico" // You can add your own icon path
       });
     }
-    
+
     // Play a sound notification
     const audio = new Audio('/notification-sound.mp3'); // Add your sound file to public folder
     audio.play().catch(e => console.log('Audio play failed:', e));
-    
+
     setIsTimerRunning(false);
     setIsBreak(!isBreak); // Toggle break state
-    
+
     if (!isBreak) {
       // If focus session ended, show break timer
       setRemainingTime(breakDuration * 60);
@@ -181,13 +177,13 @@ const CalendarPage = () => {
       });
       const fetchedEvents = Array.isArray(response.data.tasks)
         ? response.data.tasks.map((task) => ({
-            id: task._id,
-            title: task.title,
-            start: new Date(task.startDate || task.dueDate),
-            end: new Date(task.endDate || task.dueDate),
-            allDay: false,
-            status: task.status,
-          }))
+          id: task._id,
+          title: task.title,
+          start: new Date(task.startDate || task.dueDate),
+          end: new Date(task.endDate || task.dueDate),
+          allDay: false,
+          status: task.status,
+        }))
         : [];
       setEvents(fetchedEvents);
     } catch (error) {
@@ -211,11 +207,11 @@ const CalendarPage = () => {
       // If the task is already completed, keep it completed
       if (event.status === 'Completed') {
         const updatedEvent = { ...event, start: new Date(start), end: new Date(end), allDay: droppedOnAllDaySlot };
-        
+
         setEvents((prevEvents) =>
           prevEvents.map((evt) => (evt.id === event.id ? updatedEvent : evt))
         );
-  
+
         const token = localStorage.getItem('token');
         await axios.put(`http://localhost:5000/api/tasks/${event.id}`, {
           startDate: updatedEvent.start.toISOString(),
@@ -228,10 +224,10 @@ const CalendarPage = () => {
         });
         return;
       }
-  
+
       const now = new Date();
       let newStatus;
-  
+
       // Check if the task period includes current time
       if (start <= now && end >= now) {
         newStatus = 'In Progress';
@@ -240,19 +236,19 @@ const CalendarPage = () => {
       } else if (start > now) {
         newStatus = 'Not Started';
       }
-  
-      const updatedEvent = { 
-        ...event, 
-        start: new Date(start), 
-        end: new Date(end), 
-        allDay: droppedOnAllDaySlot, 
-        status: newStatus 
+
+      const updatedEvent = {
+        ...event,
+        start: new Date(start),
+        end: new Date(end),
+        allDay: droppedOnAllDaySlot,
+        status: newStatus
       };
-  
+
       setEvents((prevEvents) =>
         prevEvents.map((evt) => (evt.id === event.id ? updatedEvent : evt))
       );
-  
+
       const token = localStorage.getItem('token');
       await axios.put(`http://localhost:5000/api/tasks/${event.id}`, {
         startDate: updatedEvent.start.toISOString(),
@@ -324,9 +320,9 @@ const CalendarPage = () => {
               <Modal.Title>{selectedEvent.title}</Modal.Title>
               {selectedEvent.status !== 'Completed' && (
                 <Button variant="success" onClick={handleMarkCompleted}>
-                      ✓
+                  ✓
                 </Button>
-                )}
+              )}
             </Modal.Header>
             <Modal.Body>
               <p><strong>Status:</strong> {selectedEvent.status}</p>
@@ -339,18 +335,18 @@ const CalendarPage = () => {
               {!isTimerRunning && !isBreak && (
                 <>
                   <h5>Start Focus Timer</h5>
-                    <>
-                      <div>
-                        <label>Focus Duration (minutes): </label>
-                        <input
-                          type="number"
-                          value={timerDuration}
-                          onChange={(e) => setTimerDuration(Number(e.target.value))}
-                          min="1"
-                        />
-                      </div>
-                      <Button onClick={handleStartTimer}>Start Timer</Button>
-                    </>
+                  <>
+                    <div>
+                      <label>Focus Duration (minutes): </label>
+                      <input
+                        type="number"
+                        value={timerDuration}
+                        onChange={(e) => setTimerDuration(Number(e.target.value))}
+                        min="1"
+                      />
+                    </div>
+                    <Button onClick={handleStartTimer}>Start Timer</Button>
+                  </>
                 </>
               )}
               {isBreak && (
@@ -403,8 +399,8 @@ const CalendarPage = () => {
             {Math.floor(remainingTime / 60)}:{('0' + (remainingTime % 60)).slice(-2)}
           </div>
           <div>
-            <Button 
-              variant="danger" 
+            <Button
+              variant="danger"
               onClick={handleEndTimerEarly}
               style={{ marginRight: '10px' }}
             >
@@ -412,8 +408,8 @@ const CalendarPage = () => {
             </Button>
           </div>
           <p style={{ marginTop: '20px' }}>
-            {isBreak 
-              ? 'Take a break and relax!' 
+            {isBreak
+              ? 'Take a break and relax!'
               : 'Stay focused on your task. All other features are disabled during focus time.'}
           </p>
         </div>
