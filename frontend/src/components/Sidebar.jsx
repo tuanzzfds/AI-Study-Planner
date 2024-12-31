@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  FaGraduationCap, 
-  FaCalendar, 
-  FaListAlt,  
-  FaCogs, 
+import {
+  FaGraduationCap,
+  FaCalendar,
+  FaListAlt,
+  FaCogs,
   FaSignOutAlt
 } from 'react-icons/fa';
 import axios from 'axios';
@@ -38,7 +38,7 @@ const Sidebar = () => {
     try {
       await signOut(auth);
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/users/logout', {}, {
+      await axios.post('http://localhost:5001/api/users/logout', {}, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -100,12 +100,12 @@ const Sidebar = () => {
         <div className="theme-switch d-flex align-items-center justify-content-between">
           <span>Theme</span>
           <div className="form-check form-switch">
-            <input 
-              className="form-check-input" 
-              type="checkbox" 
-              id="themeSwitch" 
+            <input
+              className="form-check-input"
+              type="checkbox"
+              id="themeSwitch"
               checked={isDarkMode}
-              onChange={handleThemeSwitch} 
+              onChange={handleThemeSwitch}
             />
             <label className="form-check-label" htmlFor="themeSwitch">
               {isDarkMode ? 'Dark' : 'Light'}

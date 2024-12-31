@@ -172,7 +172,7 @@ const CalendarPage = () => {
   const fetchTasks = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/tasks', {
+      const response = await axios.get('http://localhost:5001/api/tasks', {
         headers: { Authorization: `Bearer ${token}` },
       });
       const fetchedEvents = Array.isArray(response.data.tasks)
@@ -213,7 +213,7 @@ const CalendarPage = () => {
         );
 
         const token = localStorage.getItem('token');
-        await axios.put(`http://localhost:5000/api/tasks/${event.id}`, {
+        await axios.put(`http://localhost:5001/api/tasks/${event.id}`, {
           startDate: updatedEvent.start.toISOString(),
           endDate: updatedEvent.end.toISOString(),
           status: 'Completed', // Maintain completed status
@@ -250,7 +250,7 @@ const CalendarPage = () => {
       );
 
       const token = localStorage.getItem('token');
-      await axios.put(`http://localhost:5000/api/tasks/${event.id}`, {
+      await axios.put(`http://localhost:5001/api/tasks/${event.id}`, {
         startDate: updatedEvent.start.toISOString(),
         endDate: updatedEvent.end.toISOString(),
         status: updatedEvent.status,
@@ -272,7 +272,7 @@ const CalendarPage = () => {
     }
     try {
       const token = localStorage.getItem('token');
-      await axios.patch(`http://localhost:5000/api/tasks/${selectedEvent.id}/status`, {
+      await axios.patch(`http://localhost:5001/api/tasks/${selectedEvent.id}/status`, {
         status: 'Completed'
       }, {
         headers: {

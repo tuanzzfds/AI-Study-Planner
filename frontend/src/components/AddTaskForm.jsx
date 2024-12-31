@@ -52,7 +52,7 @@ const AddTaskForm = ({ onTaskAdded }) => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post('http://localhost:5000/api/tasks', {
+      await axios.post('http://localhost:5001/api/tasks', {
         title,
         description,
         priority,

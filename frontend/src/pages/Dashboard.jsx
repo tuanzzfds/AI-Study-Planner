@@ -42,7 +42,7 @@ const Dashboard = () => {
     const fetchTasksDueToday = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/tasks/due-today', {
+        const response = await axios.get('http://localhost:5001/api/tasks/due-today', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setTasksDueToday(response.data.count);
@@ -54,7 +54,7 @@ const Dashboard = () => {
     const fetchInProgressTasks = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/tasks', {
+        const response = await axios.get('http://localhost:5001/api/tasks', {
           headers: { Authorization: `Bearer ${token}` },
           params: { status: 'In Progress' },
         });
@@ -66,7 +66,7 @@ const Dashboard = () => {
     const fetchUpcomingTasks = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/tasks/upcoming', {
+        const response = await axios.get('http://localhost:5001/api/tasks/upcoming', {
           headers: { Authorization: `Bearer ${token}` },
         });
         setUpcomingTasks(response.data.tasks);
@@ -92,7 +92,7 @@ const Dashboard = () => {
     const fetchInProgressTasks = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/tasks', {
+        const response = await axios.get('http://localhost:5001/api/tasks', {
           headers: { Authorization: `Bearer ${token}` },
           params: { status: 'In Progress' },
         });
@@ -108,13 +108,13 @@ const Dashboard = () => {
   const handleTaskDeleted = async (taskId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/tasks/${taskId}`, {
+      await axios.delete(`http://localhost:5001/api/tasks/${taskId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const fetchInProgressTasks = async () => {
         try {
           const token = localStorage.getItem('token');
-          const response = await axios.get('http://localhost:5000/api/tasks', {
+          const response = await axios.get('http://localhost:5001/api/tasks', {
             headers: { Authorization: `Bearer ${token}` },
             params: { status: 'In Progress' },
           });

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { FaEdit,FaTrash } from 'react-icons/fa';
+import { FaEdit, FaTrash } from 'react-icons/fa';
 import Sidebar from '../components/Sidebar';
 import './TaskPage.css';
 import axios from 'axios';
@@ -34,7 +34,7 @@ const TasksPage = () => {
     fetchTasks();
     handleCloseModal();
   };
-  
+
   useEffect(() => {
     fetchTasks();
   }, [search, filterPriority, filterStatus, sortField, sortOrder]);
@@ -42,7 +42,7 @@ const TasksPage = () => {
   const fetchTasks = async () => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:5000/api/tasks', {
+      const response = await axios.get('http://localhost:5001/api/tasks', {
         headers: { Authorization: `Bearer ${token}` },
         params: {
           search,
@@ -83,7 +83,7 @@ const TasksPage = () => {
   const handleDeleteTask = async (taskId) => {
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:5000/api/tasks/${taskId}`, {
+      await axios.delete(`http://localhost:5001/api/tasks/${taskId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setTasks(tasks.filter(task => task._id !== taskId));
@@ -107,7 +107,7 @@ const TasksPage = () => {
     try {
       const token = localStorage.getItem('token');
       const updatedTask = { ...selectedTask, status: 'Completed' };
-      await axios.put(`http://localhost:5000/api/tasks/${selectedTask._id}`, updatedTask, {
+      await axios.put(`http://localhost:5001/api/tasks/${selectedTask._id}`, updatedTask, {
         headers: { Authorization: `Bearer ${token}` },
       });
       handleUpdateTask(updatedTask);
@@ -131,20 +131,20 @@ const TasksPage = () => {
     }
   };
 
-   // Filter and sort tasks
-   const filteredTasks = tasks
-   .filter(task =>
-     task.title.toLowerCase().includes(search.toLowerCase()) ||
-     task.description.toLowerCase().includes(search.toLowerCase())
-   )
-   .filter(task => (filterPriority ? task.priority === filterPriority : true))
-   .filter(task => (filterStatus ? task.status === filterStatus : true))
-   .sort((a, b) => {
-     if (!sortField) return 0;
-     if (a[sortField] < b[sortField]) return sortOrder === 'asc' ? -1 : 1;
-     if (a[sortField] > b[sortField]) return sortOrder === 'asc' ? 1 : -1;
-     return 0;
-   });
+  // Filter and sort tasks
+  const filteredTasks = tasks
+    .filter(task =>
+      task.title.toLowerCase().includes(search.toLowerCase()) ||
+      task.description.toLowerCase().includes(search.toLowerCase())
+    )
+    .filter(task => (filterPriority ? task.priority === filterPriority : true))
+    .filter(task => (filterStatus ? task.status === filterStatus : true))
+    .sort((a, b) => {
+      if (!sortField) return 0;
+      if (a[sortField] < b[sortField]) return sortOrder === 'asc' ? -1 : 1;
+      if (a[sortField] > b[sortField]) return sortOrder === 'asc' ? 1 : -1;
+      return 0;
+    });
   return (
     <>
       <Sidebar activeTab="tasks" />
@@ -187,7 +187,7 @@ const TasksPage = () => {
                   Sort by Status {sortField === 'status' ? (sortOrder === 'asc' ? '↑' : '↓') : ''}
                 </button>
               </div>
-              <Button 
+              <Button
                 onClick={handleAnalyzeSchedule}
                 disabled={isAnalyzing}
                 className="btn btn-primary mt-2"
@@ -209,8 +209,8 @@ const TasksPage = () => {
                     </div>
                   </div>
                   <div className="task-actions">
-                  <FaEdit onClick={() => handleUpdateTask(task._id)} className="edit-icon me-2" />
-                  <FaTrash onClick={(e) => { e.stopPropagation(); handleDeleteTask(task._id); }} className="delete-icon" />
+                    <FaEdit onClick={() => handleUpdateTask(task._id)} className="edit-icon me-2" />
+                    <FaTrash onClick={(e) => { e.stopPropagation(); handleDeleteTask(task._id); }} className="delete-icon" />
                   </div>
                 </div>
               ))}
@@ -219,8 +219,8 @@ const TasksPage = () => {
         </div>
       </div>
 
-        {/* Task Update Modal */}
-        {selectedTask && (
+      {/* Task Update Modal */}
+      {selectedTask && (
         <Modal show={showModal} onHide={handleCloseModal} className="dark-theme-modal">
           <Modal.Header closeButton>
             <Modal.Title>{isEditing ? 'Edit Task' : 'Task Details'}</Modal.Title>
@@ -263,24 +263,24 @@ const TasksPage = () => {
             )}
           </Modal.Footer>
         </Modal>
-        )}
+      )}
 
-        {/* Analysis Modal */}
-        <Modal show={showAnalysisModal} onHide={() => setShowAnalysisModal(false)}>
-          <Modal.Header closeButton>
-            <Modal.Title>Schedule Analysis</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div style={{ whiteSpace: 'pre-line' }}>
-              {analysisResult}
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowAnalysisModal(false)}>
-              Close
-            </Button>
-          </Modal.Footer>
-        </Modal>
+      {/* Analysis Modal */}
+      <Modal show={showAnalysisModal} onHide={() => setShowAnalysisModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Schedule Analysis</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div style={{ whiteSpace: 'pre-line' }}>
+            {analysisResult}
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowAnalysisModal(false)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
     </>
   );

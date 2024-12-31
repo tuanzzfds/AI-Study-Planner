@@ -80,7 +80,7 @@ export const analyzeAnalytics = async (dailyData, taskStatusData, progressPercen
 export const createTask = async (taskData) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.post('http://localhost:5000/api/ai/tasks/create', taskData, {
+    const response = await axios.post('http://localhost:5001/api/ai/tasks/create', taskData, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data.task;
@@ -93,7 +93,7 @@ export const createTask = async (taskData) => {
 export const updateTask = async (taskId, updates) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.put(`http://localhost:5000/api/ai/tasks/update/${taskId}`, updates, {
+    const response = await axios.put(`http://localhost:5001/api/ai/tasks/update/${taskId}`, updates, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data.task;
@@ -106,7 +106,7 @@ export const updateTask = async (taskId, updates) => {
 export const deleteTask = async (taskId) => {
   try {
     const token = localStorage.getItem('token');
-    await axios.delete(`http://localhost:5000/api/ai/tasks/delete/${taskId}`, {
+    await axios.delete(`http://localhost:5001/api/ai/tasks/delete/${taskId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
   } catch (error) {
@@ -118,7 +118,7 @@ export const deleteTask = async (taskId) => {
 export const startTimer = async (taskId, duration) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.post('http://localhost:5000/api/ai/timer/start', { taskId, duration }, {
+    const response = await axios.post('http://localhost:5001/api/ai/timer/start', { taskId, duration }, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data.timer;
@@ -131,7 +131,7 @@ export const startTimer = async (taskId, duration) => {
 export const stopTimer = async (timerId) => {
   try {
     const token = localStorage.getItem('token');
-    const response = await axios.post('http://localhost:5000/api/ai/timer/stop', { timerId }, {
+    const response = await axios.post('http://localhost:5001/api/ai/timer/stop', { timerId }, {
       headers: { Authorization: `Bearer ${token}` },
     });
     return response.data.timer;

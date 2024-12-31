@@ -15,7 +15,7 @@ const SettingsPage = () => {
 
   const validateInputs = () => {
     const errors = {};
-    
+
     if (fullName) {
       const nameValidation = validateName(fullName);
       if (!nameValidation.isValid) {
@@ -38,7 +38,7 @@ const SettingsPage = () => {
     e.preventDefault();
     setError('');
     setSuccess('');
-    
+
     if (!validateInputs()) {
       setError('Please correct the validation errors');
       return;
@@ -56,7 +56,7 @@ const SettingsPage = () => {
       if (profilePicture) formData.append('profilePicture', profilePicture);
 
       await axios.put(
-        'http://localhost:5000/api/users/profile',
+        'http://localhost:5001/api/users/profile',
         formData,
         {
           headers: {
@@ -104,8 +104,8 @@ const SettingsPage = () => {
                 <Form.Group as={Row} className="mb-3" controlId="fullName">
                   <Form.Label column sm="3">Full Name</Form.Label>
                   <Col sm="9">
-                    <Form.Control 
-                      type="text" 
+                    <Form.Control
+                      type="text"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       isInvalid={!!validationErrors.fullName}
@@ -119,7 +119,7 @@ const SettingsPage = () => {
                 <Form.Group as={Row} className="mb-4" controlId="password">
                   <Form.Label column sm="3">Password</Form.Label>
                   <Col sm="9">
-                    <Form.Control 
+                    <Form.Control
                       type="password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -133,7 +133,7 @@ const SettingsPage = () => {
 
                 <Form.Group as={Row} className="mb-4" controlId="newsletters">
                   <Col sm={{ span: 9, offset: 3 }}>
-                    <Form.Check 
+                    <Form.Check
                       type="checkbox"
                       label="I'd like to receive updates from time to time"
                       checked={newsletters}

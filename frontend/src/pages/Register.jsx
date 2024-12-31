@@ -45,7 +45,7 @@ const Register = () => {
     }
 
     try {
-       await axios.post('http://localhost:5000/api/users/signup', {
+      await axios.post('http://localhost:5001/api/users/signup', {
         email,
         password,
         fullName, // Send fullName to backend
@@ -64,7 +64,7 @@ const Register = () => {
         <FontAwesomeIcon icon={faBook} className="register-logo" />
         <h1>Create an account</h1>
         <p className="register-subtitle">Organise your classes, assignments and exams for free.</p>
-        
+
         <form onSubmit={handleSubmit} className="register-form">
           {error && <div className="error-message">{error}</div>}
 
@@ -107,7 +107,7 @@ const Register = () => {
             />
             <div className="underline"></div>
           </div>
-          
+
           <button type="submit" className="confirm-button">Confirm</button>
         </form>
       </div>
