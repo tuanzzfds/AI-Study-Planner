@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBook } from '@fortawesome/free-solid-svg-icons';
 import { validateEmail, validatePassword, validateName } from '../utils/validation';
+import { createUserWithEmailAndPassword, sendEmailVerification } from 'firebase/auth'; // Import Firebase functions
+import { auth } from '../services/firebase'; // Import Firebase auth
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -13,11 +15,13 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [message, setMessage] = useState(''); // Add message state
   const navigate = useNavigate(); // Initialize navigate
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setMessage('');
 
     // Validate all fields
     const emailValidation = validateEmail(email);
@@ -45,15 +49,21 @@ const Register = () => {
     }
 
     try {
-      await axios.post('http://localhost:5001/api/users/signup', {
-        email,
-        password,
-        fullName, // Send fullName to backend
-      });
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Send email verification
+      await sendEmailVerification(user);
+
+      // Set success message
+      setMessage('Registration successful! Please check your email to verify your account.');
+
       // Redirect to login page after successful registration
-      navigate('/login');
+      setTimeout(() => {
+        navigate('/login');
+      }, 5000); // Redirect after 5 seconds
     } catch (error) {
-      setError(error.response?.data?.message || 'Registration failed.');
+      setError(error.message || 'Registration failed.');
     }
   };
 
@@ -67,6 +77,7 @@ const Register = () => {
 
         <form onSubmit={handleSubmit} className="register-form">
           {error && <div className="error-message">{error}</div>}
+          {message && <div className="success-message">{message}</div>}
 
           <div className="input-field">
             <input
@@ -76,7 +87,6 @@ const Register = () => {
               onChange={(e) => setEmail(e.target.value)}
             />
             <div className="underline"></div>
-
           </div>
           <div className="input-field">
             <input
