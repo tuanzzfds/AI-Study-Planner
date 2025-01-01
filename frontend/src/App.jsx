@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import NewTask from './pages/NewTask';
 import Login from './pages/Login';
-// import ForgotPassWord from './pages/ForgotPassWord';
+import ForgotPassWord from './pages/ForgotPassWord';
 import Register from './pages/Register';
 import HomePage from './pages/HomePage';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -49,6 +49,7 @@ const App = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/calendar" element={<CalendarPage />} />
+        <Route path="/forgotpassword" element={<ForgotPassWord />} />
         <Route path="/taskpage" element={<TaskPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
