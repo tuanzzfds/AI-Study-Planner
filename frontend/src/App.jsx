@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Dashboard from './pages/Dashboard';
 import NewTask from './pages/NewTask';
 import Login from './pages/Login';
+// import ForgotPassWord from './pages/ForgotPassWord';
 import Register from './pages/Register';
 import HomePage from './pages/HomePage';
 import ProtectedRoute from './components/ProtectedRoute';

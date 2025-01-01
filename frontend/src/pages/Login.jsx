@@ -61,7 +61,7 @@ const Login = () => {
       provider.setCustomParameters({
         prompt: 'select_account'
       });
-      
+
       const result = await signInWithPopup(auth, provider);
       const token = await result.user.getIdToken();
       localStorage.setItem('token', token);
@@ -114,7 +114,9 @@ const Login = () => {
                 {loading ? 'Logging in...' : 'Login'}
               </Button>
             </Form>
-
+            <div className="text-center mb-2">
+              <Link to="/forgotpassword">Forgot PassWord</Link>
+            </div>
             <div className="text-center mb-3">
               <span>OR</span>
             </div>

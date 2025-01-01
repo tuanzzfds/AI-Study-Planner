@@ -29,13 +29,13 @@ const HomePage = ({ currentUser }) => {
         </div>
       </Container>
       <div className="d-flex justify-content-center">
-          <img
-            src={themeImage}
-            alt="Study Life Illustration"
-            className="img-fluid rounded shadow-lg"
-            style={{width: '100%', objectFit: 'cover' }}
-          />
-        </div>
+        <img
+          src={themeImage}
+          alt="Study Life Illustration"
+          className="img-fluid rounded shadow-lg"
+          style={{ width: '100%', objectFit: 'cover' }}
+        />
+      </div>
       {/* Features Section */}
       <Container className="mt-5">
         <Row>
