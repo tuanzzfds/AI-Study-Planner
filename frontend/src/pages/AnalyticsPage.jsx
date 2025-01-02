@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
 import { Container, Row, Col, ProgressBar, Button, Modal } from 'react-bootstrap';
 import { Bar, Pie } from 'react-chartjs-2';
 import './AnalyticsPage.css';
@@ -24,27 +25,68 @@ const AnalyticsPage = () => {
   const progressPercentage = Math.round((totalTimeSpent / totalEstimatedTime) * 100);
 
   // Mock data for daily time spent
-  const dailyData = {
+  // const dailyData = {
+  //   labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+  //   datasets: [
+  //     {
+  //       label: 'Time Spent (minutes)',
+  //       data: [60, 120, 90, 180, 140, 200, 100], // Replace with actual daily data
+  //       backgroundColor: 'rgba(75, 192, 192, 0.6)',
+  //     },
+  //   ],
+  // };
+
+  const [dailyData, setDailyData] = useState({
     labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
     datasets: [
       {
         label: 'Time Spent (minutes)',
-        data: [60, 120, 90, 180, 140, 200, 100], // Replace with actual daily data
+        data: [], // Initially empty
         backgroundColor: 'rgba(75, 192, 192, 0.6)',
       },
     ],
-  };
+  });
 
   // Mock data for task statuses
-  const taskStatusData = {
-    labels: ['Completed', 'In Progress', 'Overdue'],
+  // const taskStatusData = {
+  //   labels: ['Completed', 'In Progress', 'Overdue'],
+  //   datasets: [
+  //     {
+  //       data: [15, 8, 3], // Replace with actual task data
+  //       backgroundColor: ['#4caf50', '#ffeb3b', '#f44336'],
+  //     },
+  //   ],
+  // };
+  const [taskStatusData, setTaskStatusData] = useState({
+    labels: ['Todo', 'In Progress', 'Completed', 'Expired', 'Not Started'],
     datasets: [
       {
-        data: [15, 8, 3], // Replace with actual task data
-        backgroundColor: ['#4caf50', '#ffeb3b', '#f44336'],
+        data: [], // Initially empty
+        backgroundColor: ['#2196f3', '#ffeb3b', '#4caf50', '#f44336', '#9e9e9e'],
       },
     ],
-  };
+  });
+
+  useEffect(() => {
+    // Replace with your actual API endpoint
+    axios.get('http://localhost:5001/api/task-status')
+      .then(response => {
+        const { todo, inProgress, completed, expired, notStarted } = response.data;
+        setTaskStatusData({
+          labels: ['Todo', 'In Progress', 'Completed', 'Expired', 'Not Started'],
+          datasets: [
+            {
+              data: [todo, inProgress, completed, expired, notStarted],
+              backgroundColor: ['#2196f3', '#ffeb3b', '#4caf50', '#f44336', '#9e9e9e'],
+            },
+          ],
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching task status data:', error);
+      });
+  }, []);
+
 
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [feedbackResult, setFeedbackResult] = useState('');
@@ -74,7 +116,7 @@ const AnalyticsPage = () => {
           {/* Add AI Feedback Button */}
           <Row className="mb-4">
             <Col className="text-center">
-              <Button 
+              <Button
                 onClick={handleGetAIFeedback}
                 disabled={isAnalyzing}
                 variant="primary"
