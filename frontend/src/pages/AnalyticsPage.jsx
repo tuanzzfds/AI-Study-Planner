@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Container, Row, Col, ProgressBar, Button, Modal } from 'react-bootstrap';
 import { Bar, Pie } from 'react-chartjs-2';
+import DatePicker from 'react-datepicker';
 import './AnalyticsPage.css';
 import {
   Chart as ChartJS,
@@ -37,7 +38,7 @@ const AnalyticsPage = () => {
   // };
 
   const [dailyData, setDailyData] = useState({
-    labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+    labels: [], // Initially empty
     datasets: [
       {
         label: 'Time Spent (minutes)',
@@ -46,6 +47,7 @@ const AnalyticsPage = () => {
       },
     ],
   });
+
 
   // Mock data for task statuses
   // const taskStatusData = {
@@ -67,8 +69,18 @@ const AnalyticsPage = () => {
     ],
   });
 
+  const [selectedDate, setSelectedDate] = useState(new Date());
+
   useEffect(() => {
-    // Replace with your actual API endpoint
+    // Fetch daily time spent data
+    axios.get('http://localhost:5001/api/daily-time')
+      .then(response => {
+        console.log('Daily time data:', response.data); // Log data to check if it's correct
+        setDailyData(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching daily time data:', error);
+      });
     axios.get('http://localhost:5001/api/task-status')
       .then(response => {
         const { todo, inProgress, completed, expired, notStarted } = response.data;
@@ -87,6 +99,18 @@ const AnalyticsPage = () => {
       });
   }, []);
 
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
+    // Fetch daily time spent data for the selected date
+    axios.get(`http://localhost:5001/api/daily-time?date=${date.toISOString()}`)
+      .then(response => {
+        console.log('Daily time data for selected date:', response.data); // Log data to check if it's correct
+        setDailyData(response.data);
+      })
+      .catch(error => {
+        console.error('Error fetching daily time data for selected date:', error);
+      });
+  };
 
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [feedbackResult, setFeedbackResult] = useState('');
@@ -140,6 +164,17 @@ const AnalyticsPage = () => {
               </p>
             </Col>
           </Row>
+          {/* Date Picker */}
+          <Row className="mb-4">
+            <Col className="text-center">
+              <DatePicker
+                selected={selectedDate}
+                onChange={handleDateChange}
+                dateFormat="yyyy-MM-dd"
+                className="form-control"
+              />
+            </Col>
+          </Row>
 
           {/* Daily Time Spent */}
           <Row className="mb-5">
@@ -155,6 +190,14 @@ const AnalyticsPage = () => {
                     },
                     tooltip: {
                       enabled: true,
+                    },
+                  },
+                  scales: {
+                    y: {
+                      title: {
+                        display: true,
+                        text: 'Minutes',
+                      },
                     },
                   },
                 }}

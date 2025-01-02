@@ -8,6 +8,7 @@ const aiRoutes = require('./routes/aiRoutes');
 const dotenv = require('dotenv');
 dotenv.config();
 const Task = require('./models/Task'); // Import the Task model
+const Timer = require('./models/Timer'); // Import the Timer model
 const app = express();
 
 // Middleware
@@ -64,20 +65,27 @@ app.get('/api/task-status', async (req, res) => {
   }
 });
 
+
 // Define the /api/daily-time endpoint
 app.get('/api/daily-time', async (req, res) => {
-  const userId = req.query.userId; // Get the user ID from query parameters
-
-  if (!userId) {
-    return res.status(400).json({ error: 'User ID is required' });
-  }
+  const { date } = req.query;
+  const startDate = new Date(date);
+  const endDate = new Date(date);
+  endDate.setDate(endDate.getDate() + 1);
 
   try {
     const timers = await Timer.aggregate([
-      { $match: { user: mongoose.Types.ObjectId(userId) } },
+      {
+        $match: {
+          endTime: {
+            $gte: startDate,
+            $lt: endDate
+          }
+        }
+      },
       {
         $group: {
-          _id: { $dayOfWeek: "$endTime" },
+          _id: { $dateToString: { format: "%Y-%m-%d", date: "$endTime" } },
           totalDuration: { $sum: "$duration" }
         }
       },
@@ -85,19 +93,15 @@ app.get('/api/daily-time', async (req, res) => {
     ]);
 
     const dailyData = {
-      labels: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      labels: timers.map(timer => timer._id), // Use the actual dates
       datasets: [
         {
           label: 'Time Spent (minutes)',
-          data: Array(7).fill(0), // Initialize with zeros
+          data: timers.map(timer => timer.totalDuration), // Use the total durations
           backgroundColor: 'rgba(75, 192, 192, 0.6)',
         },
       ],
     };
-
-    timers.forEach(timer => {
-      dailyData.datasets[0].data[timer._id - 1] = timer.totalDuration; // Adjust for dayOfWeek starting from 1 (Sunday)
-    });
 
     res.json(dailyData);
   } catch (error) {
