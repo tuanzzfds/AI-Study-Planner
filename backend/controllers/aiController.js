@@ -108,3 +108,34 @@ exports.stopTimer = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+exports.getFocusSessionData = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Assuming you have a FocusSession model to fetch the data
+    const focusSessionData = await FocusSession.find({ user: userId });
+
+    const totalTimeSpent = focusSessionData.reduce((acc, session) => acc + session.duration, 0);
+    const totalEstimatedTime = focusSessionData.reduce((acc, session) => acc + session.estimatedTime, 0);
+    const totalTimeSpentDaily = focusSessionData.reduce((acc, session) => {
+      const date = session.startTime.toISOString().split('T')[0];
+      acc[date] = (acc[date] || 0) + session.duration;
+      return acc;
+    }, {});
+    const totalTasksOfEachStatus = focusSessionData.reduce((acc, session) => {
+      acc[session.status] = (acc[session.status] || 0) + 1;
+      return acc;
+    }, {});
+
+    res.status(200).json({
+      totalTimeSpent,
+      totalEstimatedTime,
+      totalTimeSpentDaily: Object.values(totalTimeSpentDaily),
+      totalTasksOfEachStatus,
+    });
+  } catch (error) {
+    console.error('Error fetching focus session data:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
