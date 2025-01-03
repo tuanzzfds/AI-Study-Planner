@@ -1,0 +1,27 @@
+.profile-card {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-image {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+}
+
+.profile-placeholder {
+  width: 150px;
+  height: 150px;
+  background-color: #e9ecef;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+@media (max-width: 576px) {
+  .profile-image,
+  .profile-placeholder {
+    width: 100px;
+    height: 100px;
+  }
+}

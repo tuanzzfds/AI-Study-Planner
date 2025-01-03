@@ -1,0 +1,159 @@
+/* dashboard.css */
+
+/* Root variables */
+:root {
+  --sidebar-width: 250px;
+  --bg-light: #f8f9fa;
+  --card-bg: #ffffff;
+  --card-border-radius: 12px;
+  --card-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+/* Reset */
+body {
+  font-family: 'Arial', sans-serif;
+  background: var(--bg-light);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scroll if any */
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: var(--sidebar-width);
+  height: 100vh;
+  background: #fff;
+  border-right: 1px solid #ddd;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  z-index: 1000; /* Ensures sidebar is above content if needed */
+}
+
+.sidebar .logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 30px;
+}
+
+.sidebar nav a {
+  display: flex;
+  align-items: center;
+  padding: 10px 15px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #333;
+  margin-bottom: 10px;
+  transition: background 0.3s;
+}
+.sidebar nav a:hover {
+  background: #e9ecef;
+}
+
+.sidebar .bottom-section {
+  margin-top: auto;
+  padding-top: 20px;
+  border-top: 1px solid #ddd;
+  text-align: center;
+}
+
+/* Main Content Area */
+.main-content {
+  margin-left: var(--sidebar-width);
+  padding: 20px;
+}
+
+/* Top Header */
+.top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.top-header-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.top-header-left .time-info {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.top-header-left .date-info {
+  font-size: 1rem;
+  color: #666;
+}
+
+.top-header .profile-icon {
+  width: 40px;
+  height: 40px;
+  background: #ddd;
+  border-radius: 50%;
+}
+
+/* Cards */
+.card-like {
+  background: var(--card-bg);
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--card-shadow);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.card-like h2 {
+  font-size: 1.25rem;
+  margin-bottom: 15px;
+}
+
+
+.gradient-card {
+  background: linear-gradient(to right, #b3e5fc, #81d4fa);
+  color: #333;
+  border-radius: var(--card-border-radius);
+  box-shadow: var(--card-shadow);
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.gradient-card h2 {
+  margin-bottom: 10px;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 767px) {
+  .sidebar {
+    width: 200px;
+  }
+
+  .main-content {
+    margin-left: 200px;
+    padding: 10px;
+  }
+
+  .top-header .time-info {
+    font-size: 1.5rem;
+  }
+}
+profile-button {
+  padding: 0; /* Remove default padding */
+  border: none; /* Remove border */
+  background: none; /* Remove background */
+  border-radius: 50%; /* Make button circular */
+  overflow: hidden; /* Ensure image doesn't overflow */
+}
+
+.profile-image {
+  width: 100%; /* Fill the button */
+  height: 100%; /* Fill the button */
+  object-fit: cover; /* Maintain aspect ratio */
+  border-radius: 50%; /* Make image circular */
+}
