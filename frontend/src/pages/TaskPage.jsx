@@ -221,10 +221,7 @@ const TasksPage = () => {
 
       {/* Task Update Modal */}
       {selectedTask && (
-        <Modal 
-          show={showModal} 
-          onHide={handleCloseModal}
-        >
+        <Modal show={showModal} onHide={handleCloseModal} className="dark-theme-modal">
           <Modal.Header closeButton>
             <Modal.Title>{isEditing ? 'Edit Task' : 'Task Details'}</Modal.Title>
           </Modal.Header>
@@ -269,10 +266,7 @@ const TasksPage = () => {
       )}
 
       {/* Analysis Modal */}
-      <Modal 
-        show={showAnalysisModal} 
-        onHide={() => setShowAnalysisModal(false)}
-      >
+      <Modal show={showAnalysisModal} onHide={() => setShowAnalysisModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>Schedule Analysis</Modal.Title>
         </Modal.Header>
