@@ -36,7 +36,7 @@ const CalendarPage = () => {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [remainingTime, setRemainingTime] = useState(timerDuration * 60);
   const [isBreak, setIsBreak] = useState(false);
-
+  const [showEndTimerModal, setShowEndTimerModal] = useState(false);
   const overlayStyle = {
     position: 'fixed',
     top: 0,
@@ -126,10 +126,24 @@ const CalendarPage = () => {
   };
 
   const handleEndTimerEarly = () => {
+    // setIsTimerRunning(false);
+    // setRemainingTime(timerDuration * 60);
+    // setIsBreak(false);
+    setShowEndTimerModal(true);
+  };
+
+
+  const confirmEndTimerEarly = () => {
     setIsTimerRunning(false);
     setRemainingTime(timerDuration * 60);
     setIsBreak(false);
+    setShowEndTimerModal(false);
   };
+
+  const cancelEndTimerEarly = () => {
+    setShowEndTimerModal(false);
+  };
+
 
   // Modify handleTimerEnd to initiate break
   const handleTimerEnd = () => {
@@ -406,14 +420,30 @@ const CalendarPage = () => {
             >
               End Timer Early
             </Button>
+
           </div>
           <p style={{ marginTop: '20px' }}>
             {isBreak
               ? 'Take a break and relax!'
               : 'Stay focused on your task. All other features are disabled during focus time.'}
           </p>
+
         </div>
       )}
+      <Modal show={showEndTimerModal} onHide={cancelEndTimerEarly} style={{ zIndex: 10000 }}>
+        <Modal.Header closeButton>
+          <Modal.Title>Confirm End Timer</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to end the timer early?</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={cancelEndTimerEarly}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={confirmEndTimerEarly}>
+            End Timer
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };
