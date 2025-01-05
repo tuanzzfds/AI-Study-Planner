@@ -40,16 +40,67 @@ const AnalyticsPage = () => {
 
 
   // Mock data for daily time spent
-  const dailyData = {
+  const [dailyData, setDailyData] = useState({
     labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
     datasets: [
       {
         label: 'Time Spent (minutes)',
-        data: [10, 15, 8, 12, 14, 3, 5], // Replace with actual daily data
+        data: [], // Initialize with an empty array
         backgroundColor: 'rgba(75, 192, 192, 0.6)',
       },
     ],
-  };
+  });
+
+  useEffect(() => {
+    const fetchDailyData = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:5001/api/user/dailytimespent', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const dailyDataFromAPI = response.data.dailyTimeSpent; // Assuming the API returns an array of daily time spent in minutes
+        setDailyData((prevData) => ({
+          ...prevData,
+          datasets: [
+            {
+              ...prevData.datasets[0],
+              data: dailyDataFromAPI,
+            },
+          ],
+        }));
+      } catch (error) {
+        console.error('Error fetching daily data:', error);
+      }
+    };
+
+    fetchDailyData();
+  }, []);
+
+  useEffect(() => {
+    const updateDailyData = () => {
+      const currentDay = new Date().getDay();
+      setDailyData((prevData) => {
+        const newData = [...prevData.datasets[0].data];
+        newData[currentDay] = totalTimeSpent / 60; // Convert seconds to minutes
+        return {
+          ...prevData,
+          datasets: [
+            {
+              ...prevData.datasets[0],
+              data: newData,
+            },
+          ],
+        };
+      });
+    };
+
+    const intervalId = setInterval(updateDailyData, 24 * 60 * 60 * 1000); // Update daily data every 24 hours
+
+    return () => clearInterval(intervalId);
+  }, [totalTimeSpent]);
+
 
   useEffect(() => {
     const fetchTotalTimeSpent = async () => {
@@ -155,25 +206,25 @@ const AnalyticsPage = () => {
 
   useEffect(() => {
     // Fetch daily time spent data
-    axios.get('http://localhost:5001/api/daily-time')
-      .then(response => {
-        console.log('Daily time data:', response.data); // Log data to check if it's correct
-        setDailyData({
-          labels: response.data.labels,
-          datasets: [
-            {
-              label: 'Time Spent (minutes)',
-              data: response.data.data,
-              backgroundColor: 'rgba(75, 192, 192, 0.6)',
-              borderColor: 'rgba(75, 192, 192, 1)',
-              borderWidth: 1,
-            },
-          ],
-        });
-      })
-      .catch(error => {
-        console.error('Error fetching daily time spent data:', error);
-      });
+    // axios.get('http://localhost:5001/api/daily-time')
+    //   .then(response => {
+    //     console.log('Daily time data:', response.data); // Log data to check if it's correct
+    //     setDailyData({
+    //       labels: response.data.labels,
+    //       datasets: [
+    //         {
+    //           label: 'Time Spent (minutes)',
+    //           data: response.data.data,
+    //           backgroundColor: 'rgba(75, 192, 192, 0.6)',
+    //           borderColor: 'rgba(75, 192, 192, 1)',
+    //           borderWidth: 1,
+    //         },
+    //       ],
+    //     });
+    //   })
+    //   .catch(error => {
+    //     console.error('Error fetching daily time spent data:', error);
+    //   });
     axios.get('http://localhost:5001/api/task-status')
       .then(response => {
         const { todo, inProgress, completed, expired, notStarted } = response.data;
@@ -191,19 +242,6 @@ const AnalyticsPage = () => {
         console.error('Error fetching task status data:', error);
       });
   }, []);
-
-  // const handleDateChange = (date) => {
-  //   setSelectedDate(date);
-  //   // Fetch daily time spent data for the selected date
-  //   axios.get(`http://localhost:5001/api/daily-time?date=${date.toISOString()}`)
-  //     .then(response => {
-  //       console.log('Daily time data for selected date:', response.data); // Log data to check if it's correct
-  //       setDailyData(response.data);
-  //     })
-  //     .catch(error => {
-  //       console.error('Error fetching daily time data for selected date:', error);
-  //     });
-  // };
 
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [feedbackResult, setFeedbackResult] = useState('');
