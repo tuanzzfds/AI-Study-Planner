@@ -24,6 +24,12 @@ const AnalyticsPage = () => {
   // const totalTimeSpent = 750; // in minutes
   // const progressPercentage = Math.round((totalTimeSpent / totalEstimatedTime) * 100);
 
+  const [totalEstimatedTime, setTotalEstimatedTime] = useState(180 * 60); // in seconds
+  const [totalTimeSpent, setTotalTimeSpent] = useState(0 * 60); // in seconds
+  const [progressPercentage, setProgressPercentage] = useState(Math.round((totalTimeSpent / totalEstimatedTime) * 100));
+  const [isRunning, setIsRunning] = useState(true);
+  const [intervalId, setIntervalId] = useState(null);
+
   // Mock data for daily time spent
   const dailyData = {
     labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
@@ -36,8 +42,9 @@ const AnalyticsPage = () => {
     ],
   };
 
-  const [totalEstimatedTime, setTotalEstimatedTime] = useState(180); // in minutes
-  const [totalTimeSpent, setTotalTimeSpent] = useState(20); // in minutes
+  // const [totalEstimatedTime, setTotalEstimatedTime] = useState(180); // in minutes
+  // const [totalTimeSpent, setTotalTimeSpent] = useState(20); // in minutes
+  // const [progressPercentage, setProgressPercentage] = useState(Math.round((totalTimeSpent / totalEstimatedTime) * 100));
   useEffect(() => {
     const fetchTotalTimeSpent = async () => {
       try {
@@ -45,27 +52,57 @@ const AnalyticsPage = () => {
         const response = await axios.get('http://localhost:5001/api/user/totaltime', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setTotalTimeSpent(response.data.totalTimeSpent);
+        setTotalTimeSpent(response.data.totalTimeSpent * 60); // Convert minutes to seconds
+        setProgressPercentage(Math.round((response.data.totalTimeSpent * 60 / totalEstimatedTime) * 100));
       } catch (error) {
         console.error('Error fetching total time spent:', error);
       }
     };
 
     fetchTotalTimeSpent();
-  }, []);
+  }, [totalEstimatedTime]);
 
-  const progressPercentage = Math.round((totalTimeSpent / totalEstimatedTime) * 100);
+  useEffect(() => {
+    if (isRunning) {
+      const newIntervalId = setInterval(() => {
+        setTotalTimeSpent(prevTime => {
+          const newTime = prevTime + 1;
+          setProgressPercentage(Math.round((newTime / totalEstimatedTime) * 100));
+          if (newTime >= totalEstimatedTime) {
+            clearInterval(newIntervalId);
+            setIsRunning(false);
+          }
+          return newTime;
+        });
+      }, 1000); // Increase time every second
+      setIntervalId(newIntervalId);
+      return () => clearInterval(newIntervalId);
+    }
+  }, [isRunning, totalEstimatedTime]);
 
-  // Mock data for task statuses
-  // const taskStatusData = {
-  //   labels: ['Completed', 'In Progress', 'Overdue'],
-  //   datasets: [
-  //     {
-  //       data: [15, 8, 3], // Replace with actual task data
-  //       backgroundColor: ['#4caf50', '#ffeb3b', '#f44336'],
-  //     },
-  //   ],
+  // const handleStartProgress = () => {
+  //   const interval = setInterval(() => {
+  //     setTotalTimeSpent(prevTime => {
+  //       const newTime = prevTime + 1;
+  //       setProgressPercentage(Math.round((newTime / totalEstimatedTime) * 100));
+  //       if (newTime >= totalEstimatedTime) {
+  //         clearInterval(interval);
+  //       }
+  //       return newTime;
+  //     });
+  //   }, 1000); // Increase time every second
   // };
+
+  const formatTime = (seconds) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  // const progressPercentage = Math.round((totalTimeSpent / totalEstimatedTime) * 100);
+
+
   const [taskStatusData, setTaskStatusData] = useState({
     labels: ['Todo', 'In Progress', 'Completed', 'Expired', 'Not Started'],
     datasets: [
@@ -178,7 +215,7 @@ const AnalyticsPage = () => {
                 variant={progressPercentage > 60 ? 'success' : 'warning'}
               />
               <p className="mt-3">
-                <strong>{totalTimeSpent} minutes</strong> out of <strong>{totalEstimatedTime} minutes</strong> estimated.
+                <strong>{formatTime(totalTimeSpent)}</strong> out of <strong>{formatTime(totalEstimatedTime)}</strong> estimated.
               </p>
             </Col>
           </Row>
