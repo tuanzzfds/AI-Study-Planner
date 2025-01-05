@@ -13,8 +13,8 @@ import { signOut } from 'firebase/auth';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 import '../styles/theme.css';
 
-const Sidebar = ({ activeTab }) => {
-  const [isDarkTheme, setIsDarkTheme] = useState(() => {
+const Sidebar = () => {
+  const [isDarkMode, setIsDarkMode] = useState(() => {
     return localStorage.getItem('theme') === 'dark';
   });
   const navigate = useNavigate();
@@ -23,21 +23,13 @@ const Sidebar = ({ activeTab }) => {
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
       document.body.className = savedTheme === 'dark' ? 'dark-theme' : 'light-theme';
-      setIsDarkTheme(savedTheme === 'dark');
+      setIsDarkMode(savedTheme === 'dark');
     }
   }, []);
 
-  useEffect(() => {
-    if (isDarkTheme) {
-      document.body.classList.add('dark-theme');
-    } else {
-      document.body.classList.remove('dark-theme');
-    }
-  }, [isDarkTheme]);
-
-  const toggleTheme = () => {
-    const newTheme = !isDarkTheme;
-    setIsDarkTheme(newTheme);
+  const handleThemeSwitch = () => {
+    const newTheme = !isDarkMode;
+    setIsDarkMode(newTheme);
     document.body.className = newTheme ? 'dark-theme' : 'light-theme';
     localStorage.setItem('theme', newTheme ? 'dark' : 'light');
   };
@@ -68,7 +60,7 @@ const Sidebar = ({ activeTab }) => {
   ];
 
   return (
-    <div className={`sidebar d-flex flex-column ${isDarkTheme ? 'dark-theme' : 'light-theme'}`}>
+    <div className={`sidebar d-flex flex-column ${isDarkMode ? 'dark-theme' : 'light-theme'}`}>
       <div className="logo d-flex align-items-center p-3">
         <FaGraduationCap size={24} />
         <span className="ms-2">MyStudyLife</span>
@@ -112,11 +104,11 @@ const Sidebar = ({ activeTab }) => {
               className="form-check-input"
               type="checkbox"
               id="themeSwitch"
-              checked={isDarkTheme}
-              onChange={toggleTheme}
+              checked={isDarkMode}
+              onChange={handleThemeSwitch}
             />
             <label className="form-check-label" htmlFor="themeSwitch">
-              {isDarkTheme ? 'Dark' : 'Light'}
+              {isDarkMode ? 'Dark' : 'Light'}
             </label>
           </div>
         </div>

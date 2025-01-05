@@ -150,13 +150,20 @@ const CalendarPage = () => {
     if ("Notification" in window && Notification.permission === "granted") {
       new Notification(isBreak ? "Break Time Finished!" : "Focus Session Complete!", {
         body: isBreak ? "Ready to get back to work?" : "Great job! Time for a break!",
-        icon: "/favicon.ico" // You can add your own icon path
+        icon: "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/svgs/solid/bell.svg" // Updated to use Font Awesome icon
       });
     }
 
     // Play a sound notification
-    const audio = new Audio('/notification-sound.mp3'); // Add your sound file to public folder
-    audio.play().catch(e => console.log('Audio play failed:', e));
+    const audio = new Audio('/notification-sound.mp3');
+    audio.addEventListener('canplaythrough', () => {
+      audio.play().catch(e => console.log('Audio play failed:', e));
+    });
+    audio.addEventListener('error', (e) => {
+      console.log('Audio load failed:', e);
+      const fallbackAudio = new Audio('/notification-sound.mp3');
+      fallbackAudio.play().catch(err => console.log('Fallback audio also failed:', err));
+    });
 
     setIsTimerRunning(false);
     setIsBreak(!isBreak); // Toggle break state
