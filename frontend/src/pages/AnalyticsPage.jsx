@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Container, Row, Col, ProgressBar, Button, Modal } from 'react-bootstrap';
 import { Bar, Pie } from 'react-chartjs-2';
-import DatePicker from 'react-datepicker';
 import './AnalyticsPage.css';
 import {
   Chart as ChartJS,
@@ -21,33 +20,41 @@ ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarEle
 
 const AnalyticsPage = () => {
   // Mock data for total time
-  const totalEstimatedTime = 1000; // in minutes
-  const totalTimeSpent = 750; // in minutes
-  const progressPercentage = Math.round((totalTimeSpent / totalEstimatedTime) * 100);
+  // const totalEstimatedTime = 1000; // in minutes
+  // const totalTimeSpent = 750; // in minutes
+  // const progressPercentage = Math.round((totalTimeSpent / totalEstimatedTime) * 100);
 
   // Mock data for daily time spent
-  // const dailyData = {
-  //   labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-  //   datasets: [
-  //     {
-  //       label: 'Time Spent (minutes)',
-  //       data: [60, 120, 90, 180, 140, 200, 100], // Replace with actual daily data
-  //       backgroundColor: 'rgba(75, 192, 192, 0.6)',
-  //     },
-  //   ],
-  // };
-
-  const [dailyData, setDailyData] = useState({
-    labels: [], // Initially empty
+  const dailyData = {
+    labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
     datasets: [
       {
         label: 'Time Spent (minutes)',
-        data: [], // Initially empty
+        data: [10, 15, 8, 12, 14, 3, 5], // Replace with actual daily data
         backgroundColor: 'rgba(75, 192, 192, 0.6)',
       },
     ],
-  });
+  };
 
+  const [totalEstimatedTime, setTotalEstimatedTime] = useState(180); // in minutes
+  const [totalTimeSpent, setTotalTimeSpent] = useState(20); // in minutes
+  useEffect(() => {
+    const fetchTotalTimeSpent = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await axios.get('http://localhost:5001/api/user/totaltime', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setTotalTimeSpent(response.data.totalTimeSpent);
+      } catch (error) {
+        console.error('Error fetching total time spent:', error);
+      }
+    };
+
+    fetchTotalTimeSpent();
+  }, []);
+
+  const progressPercentage = Math.round((totalTimeSpent / totalEstimatedTime) * 100);
 
   // Mock data for task statuses
   // const taskStatusData = {
@@ -76,10 +83,21 @@ const AnalyticsPage = () => {
     axios.get('http://localhost:5001/api/daily-time')
       .then(response => {
         console.log('Daily time data:', response.data); // Log data to check if it's correct
-        setDailyData(response.data);
+        setDailyData({
+          labels: response.data.labels,
+          datasets: [
+            {
+              label: 'Time Spent (minutes)',
+              data: response.data.data,
+              backgroundColor: 'rgba(75, 192, 192, 0.6)',
+              borderColor: 'rgba(75, 192, 192, 1)',
+              borderWidth: 1,
+            },
+          ],
+        });
       })
       .catch(error => {
-        console.error('Error fetching daily time data:', error);
+        console.error('Error fetching daily time spent data:', error);
       });
     axios.get('http://localhost:5001/api/task-status')
       .then(response => {
@@ -99,18 +117,18 @@ const AnalyticsPage = () => {
       });
   }, []);
 
-  const handleDateChange = (date) => {
-    setSelectedDate(date);
-    // Fetch daily time spent data for the selected date
-    axios.get(`http://localhost:5001/api/daily-time?date=${date.toISOString()}`)
-      .then(response => {
-        console.log('Daily time data for selected date:', response.data); // Log data to check if it's correct
-        setDailyData(response.data);
-      })
-      .catch(error => {
-        console.error('Error fetching daily time data for selected date:', error);
-      });
-  };
+  // const handleDateChange = (date) => {
+  //   setSelectedDate(date);
+  //   // Fetch daily time spent data for the selected date
+  //   axios.get(`http://localhost:5001/api/daily-time?date=${date.toISOString()}`)
+  //     .then(response => {
+  //       console.log('Daily time data for selected date:', response.data); // Log data to check if it's correct
+  //       setDailyData(response.data);
+  //     })
+  //     .catch(error => {
+  //       console.error('Error fetching daily time data for selected date:', error);
+  //     });
+  // };
 
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [feedbackResult, setFeedbackResult] = useState('');
@@ -157,22 +175,11 @@ const AnalyticsPage = () => {
               <ProgressBar
                 now={progressPercentage}
                 label={`${progressPercentage}%`}
-                variant={progressPercentage > 70 ? 'success' : 'warning'}
+                variant={progressPercentage > 60 ? 'success' : 'warning'}
               />
               <p className="mt-3">
                 <strong>{totalTimeSpent} minutes</strong> out of <strong>{totalEstimatedTime} minutes</strong> estimated.
               </p>
-            </Col>
-          </Row>
-          {/* Date Picker */}
-          <Row className="mb-4">
-            <Col className="text-center">
-              <DatePicker
-                selected={selectedDate}
-                onChange={handleDateChange}
-                dateFormat="yyyy-MM-dd"
-                className="form-control"
-              />
             </Col>
           </Row>
 
@@ -186,17 +193,32 @@ const AnalyticsPage = () => {
                   responsive: true,
                   plugins: {
                     legend: {
-                      display: false,
+                      display: true,
+                      position: 'top',
                     },
                     tooltip: {
                       enabled: true,
                     },
+                    title: {
+                      display: true,
+                      text: 'Daily Time Spent on Tasks',
+                    },
                   },
                   scales: {
+                    x: {
+                      title: {
+                        display: false, // Hide the title for the x-axis
+                      },
+                    },
                     y: {
                       title: {
                         display: true,
                         text: 'Minutes',
+                      },
+                      beginAtZero: true,
+                      ticks: {
+                        stepSize: 5, // Adjust step size for better readability
+                        max: 20, // Set the maximum value for the y-axis
                       },
                     },
                   },
