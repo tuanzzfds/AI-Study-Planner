@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Container, Row, Col, ProgressBar, Button, Modal } from 'react-bootstrap';
 import { Bar, Pie } from 'react-chartjs-2';
@@ -18,17 +18,26 @@ import { analyzeAnalytics } from '../services/geminiServiceAnalyticPage';
 // Register Chart.js components
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
+let globalIntervalId = null;
+
 const AnalyticsPage = () => {
   // Mock data for total time
   // const totalEstimatedTime = 1000; // in minutes
   // const totalTimeSpent = 750; // in minutes
   // const progressPercentage = Math.round((totalTimeSpent / totalEstimatedTime) * 100);
 
-  const [totalEstimatedTime, setTotalEstimatedTime] = useState(180 * 60); // in seconds
-  const [totalTimeSpent, setTotalTimeSpent] = useState(0 * 60); // in seconds
+  const [totalEstimatedTime, setTotalEstimatedTime] = useState(180 * 60); // tính bằng giây
+  const [totalTimeSpent, setTotalTimeSpent] = useState(() => {
+    const savedTime = localStorage.getItem('totalTimeSpent');
+    return savedTime ? parseInt(savedTime, 10) : 0;
+  }); // tính bằng giây
   const [progressPercentage, setProgressPercentage] = useState(Math.round((totalTimeSpent / totalEstimatedTime) * 100));
-  const [isRunning, setIsRunning] = useState(true);
-  const [intervalId, setIntervalId] = useState(null);
+  const [isRunning, setIsRunning] = useState(() => {
+    const savedRunningState = localStorage.getItem('isRunning');
+    return savedRunningState ? JSON.parse(savedRunningState) : true;
+  });
+  const totalTimeSpentRef = useRef(totalTimeSpent);
+
 
   // Mock data for daily time spent
   const dailyData = {
@@ -42,9 +51,6 @@ const AnalyticsPage = () => {
     ],
   };
 
-  // const [totalEstimatedTime, setTotalEstimatedTime] = useState(180); // in minutes
-  // const [totalTimeSpent, setTotalTimeSpent] = useState(20); // in minutes
-  // const [progressPercentage, setProgressPercentage] = useState(Math.round((totalTimeSpent / totalEstimatedTime) * 100));
   useEffect(() => {
     const fetchTotalTimeSpent = async () => {
       try {
@@ -52,8 +58,13 @@ const AnalyticsPage = () => {
         const response = await axios.get('http://localhost:5001/api/user/totaltime', {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setTotalTimeSpent(response.data.totalTimeSpent * 60); // Convert minutes to seconds
-        setProgressPercentage(Math.round((response.data.totalTimeSpent * 60 / totalEstimatedTime) * 100));
+        const fetchedTime = response.data.totalTimeSpent * 60; // Chuyển đổi phút sang giây
+        if (totalTimeSpentRef.current === 0) {
+          setTotalTimeSpent(fetchedTime);
+          totalTimeSpentRef.current = fetchedTime;
+          localStorage.setItem('totalTimeSpent', fetchedTime);
+        }
+        setProgressPercentage(Math.round((fetchedTime / totalEstimatedTime) * 100));
       } catch (error) {
         console.error('Error fetching total time spent:', error);
       }
@@ -63,22 +74,54 @@ const AnalyticsPage = () => {
   }, [totalEstimatedTime]);
 
   useEffect(() => {
-    if (isRunning) {
-      const newIntervalId = setInterval(() => {
-        setTotalTimeSpent(prevTime => {
-          const newTime = prevTime + 1;
-          setProgressPercentage(Math.round((newTime / totalEstimatedTime) * 100));
-          if (newTime >= totalEstimatedTime) {
-            clearInterval(newIntervalId);
-            setIsRunning(false);
-          }
-          return newTime;
-        });
-      }, 1000); // Increase time every second
-      setIntervalId(newIntervalId);
-      return () => clearInterval(newIntervalId);
+    if (isRunning && !globalIntervalId) {
+      globalIntervalId = setInterval(() => {
+        const newTime = totalTimeSpentRef.current + 1;
+        totalTimeSpentRef.current = newTime;
+        localStorage.setItem('totalTimeSpent', newTime);
+        setTotalTimeSpent(newTime);
+        setProgressPercentage(Math.round((newTime / totalEstimatedTime) * 100));
+        if (newTime >= totalEstimatedTime) {
+          clearInterval(globalIntervalId);
+          globalIntervalId = null;
+          setIsRunning(false);
+          localStorage.setItem('isRunning', false);
+        }
+      }, 1000); // Tăng thời gian mỗi giây
     }
+    return () => {
+      // Không xóa khoảng thời gian ở đây để đảm bảo bộ đếm thời gian tiếp tục chạy
+    };
   }, [isRunning, totalEstimatedTime]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        const savedTime = localStorage.getItem('totalTimeSpent');
+        if (savedTime) {
+          const newTime = parseInt(savedTime, 10);
+          setTotalTimeSpent(newTime);
+          totalTimeSpentRef.current = newTime;
+          setProgressPercentage(Math.round((newTime / totalEstimatedTime) * 100));
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [totalEstimatedTime]);
+
+  const formatTime = (seconds) => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+
 
   // const handleStartProgress = () => {
   //   const interval = setInterval(() => {
@@ -93,12 +136,7 @@ const AnalyticsPage = () => {
   //   }, 1000); // Increase time every second
   // };
 
-  const formatTime = (seconds) => {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = seconds % 60;
-    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  };
+
 
   // const progressPercentage = Math.round((totalTimeSpent / totalEstimatedTime) * 100);
 
