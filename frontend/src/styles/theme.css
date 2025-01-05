@@ -1,0 +1,52 @@
+:root {
+  --background-light: #ffffff;
+  --text-light: #333333;
+  --sidebar-light: #f8f9fa;
+  --card-light: #ffffff;
+
+  --background-dark: #1a1a1a;
+  --text-dark: #ffffff;
+  --sidebar-dark: #2d2d2d;
+  --card-dark: #333333;
+}
+
+/* Light theme (default) */
+.light-theme {
+  background-color: var(--background-light);
+  color: var(--text-light);
+}
+
+.light-theme .sidebar {
+  background-color: var(--sidebar-light);
+  color: var(--text-light);
+}
+
+.light-theme .card-like {
+  background-color: var(--card-light);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Dark theme */
+.dark-theme {
+  background-color: var(--background-dark);
+  color: var(--text-dark);
+}
+
+.dark-theme .sidebar {
+  background-color: var(--sidebar-dark);
+  color: var(--text-dark);
+}
+
+.dark-theme .card-like {
+  background-color: var(--card-dark);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Additional theme-specific styles */
+.dark-theme .nav-link {
+  color: #ffffff;
+}
+
+.dark-theme .main-content {
+  background-color: var(--background-dark);
+}
