@@ -46,6 +46,10 @@ const NewTask = () => {
       setError(dateValidation.message);
       return;
     }
+    if (endDate <= startDate) {
+      setError("End time must be after start time.");
+      return;
+    }
 
     try {
       const token = localStorage.getItem('token');

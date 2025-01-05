@@ -77,7 +77,15 @@ const TasksPage = () => {
   };
 
   const handleUpdateTask = (updatedTask) => {
-    setTasks(tasks.map(task => task._id === updatedTask._id ? updatedTask : task));
+    // Validate end date
+    if (updatedTask.startDate && updatedTask.endDate &&
+        new Date(updatedTask.endDate) <= new Date(updatedTask.startDate)) {
+      alert('End time must be after start time.');
+      return;
+    }
+    setTasks(tasks.map(task =>
+      task._id === updatedTask._id ? updatedTask : task
+    ));
   };
 
   const handleDeleteTask = async (taskId) => {

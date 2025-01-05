@@ -29,6 +29,9 @@ const EditTaskForm = ({ task, onTaskEdit }) => {
     if (!priorityValidation.isValid) newErrors.priority = priorityValidation.message;
 
     if (startDate && endDate) {
+      if (endDate <= startDate) {
+        newErrors.dateRange = "End time must be after start time.";
+      }
       const dateValidation = validateDateRange(startDate, endDate);
       if (!dateValidation.isValid) newErrors.dateRange = dateValidation.message;
     }
