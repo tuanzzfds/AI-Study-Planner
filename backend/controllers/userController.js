@@ -142,3 +142,13 @@ exports.changeUserPassword = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
+exports.getDailyTimeSpent = async (req, res) => {
+  // Return daily time spent data (in minutes for each day)
+  return res.status(200).json({ dailyTimeSpent: [10, 15, 20, 5, 0, 30, 25] });
+};
+
+exports.getTotalTimeSpent = async (req, res) => {
+  // Return total time spent (in minutes)
+  return res.status(200).json({ totalTimeSpent: 120 });
+};

@@ -29,6 +29,10 @@ app.use((req, res, next) => {
   next();
 });
 
+const userRoutes = require('./routes/userRoutes');
+
+app.use('/api/user', userRoutes);
+
 // Connect to MongoDB
 mongoose.connect(MONGO_URI, {
   useNewUrlParser: true,

@@ -37,4 +37,7 @@ const storage = multer.diskStorage({
     userController.changeUserPassword
   );
 
+router.get('/dailytimespent', authMiddleware, userController.getDailyTimeSpent);
+router.get('/totaltime', authMiddleware, userController.getTotalTimeSpent);
+
 module.exports = router;

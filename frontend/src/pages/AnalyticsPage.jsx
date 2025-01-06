@@ -206,25 +206,29 @@ const AnalyticsPage = () => {
 
   useEffect(() => {
     // Fetch daily time spent data
-    // axios.get('http://localhost:5001/api/daily-time')
-    //   .then(response => {
-    //     console.log('Daily time data:', response.data); // Log data to check if it's correct
-    //     setDailyData({
-    //       labels: response.data.labels,
-    //       datasets: [
-    //         {
-    //           label: 'Time Spent (minutes)',
-    //           data: response.data.data,
-    //           backgroundColor: 'rgba(75, 192, 192, 0.6)',
-    //           borderColor: 'rgba(75, 192, 192, 1)',
-    //           borderWidth: 1,
-    //         },
-    //       ],
-    //     });
-    //   })
-    //   .catch(error => {
-    //     console.error('Error fetching daily time spent data:', error);
-    //   });
+     axios.get('http://localhost:5001/api/daily-time')
+       .then(response => {
+         console.log('Daily time data:', response.data); // Log data to check if it's correct
+         // Adjusted condition based on actual API response structure
+         if (response.data && Array.isArray(response.data)) {
+           // Assuming the API returns an array of daily time spent in minutes
+           setDailyData({
+             labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+             datasets: [
+               {
+                 label: 'Time Spent (minutes)',
+                 data: response.data,
+                 backgroundColor: 'rgba(75, 192, 192, 0.6)',
+               },
+             ],
+           });
+         } else {
+           console.error('Invalid daily time data format.');
+         }
+       })
+       .catch(error => {
+         console.error('Error fetching daily time spent data:', error);
+       });
     axios.get('http://localhost:5001/api/task-status')
       .then(response => {
         const { todo, inProgress, completed, expired, notStarted } = response.data;
@@ -250,12 +254,26 @@ const AnalyticsPage = () => {
   const handleGetAIFeedback = async () => {
     try {
       setIsAnalyzing(true);
-      const result = await analyzeAnalytics(dailyData, taskStatusData, progressPercentage);
-      setFeedbackResult(result);
-      setShowFeedbackModal(true);
+      // Ensure dailyData and taskStatusData are defined and have necessary properties
+      if (
+        dailyData && 
+        dailyData.labels && 
+        dailyData.datasets && 
+        dailyData.datasets[0] &&
+        taskStatusData &&
+        taskStatusData.labels &&
+        taskStatusData.datasets &&
+        taskStatusData.datasets[0]
+      ) {
+        const result = await analyzeAnalytics(dailyData, taskStatusData, progressPercentage);
+        setFeedbackResult(result);
+        setShowFeedbackModal(true);
+      } else {
+        throw new Error('Incomplete analytics data');
+      }
     } catch (error) {
       console.error('Error getting AI feedback:', error);
-      // Handle error appropriately
+      alert('Failed to get AI feedback. Please try again.');
     } finally {
       setIsAnalyzing(false);
     }

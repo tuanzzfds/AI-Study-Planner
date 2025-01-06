@@ -34,7 +34,7 @@ export const analyzeSchedule = async (tasks) => {
   }
 };
 
-export async function analyzeAnalytics(dailyData, taskStatusData, progressPercentage) {
+export const analyzeAnalytics = async (dailyData, taskStatusData, progressPercentage) => {
   try {
     if (!apiKey) {
       throw new Error('Gemini API key is not configured');
@@ -42,14 +42,17 @@ export async function analyzeAnalytics(dailyData, taskStatusData, progressPercen
 
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
+    const dailyTime = Array.isArray(dailyData.datasets[0].data) ? dailyData.datasets[0].data.join(', ') : 'N/A';
+    const tasks = taskStatusData && taskStatusData.datasets && taskStatusData.datasets[0] && Array.isArray(taskStatusData.datasets[0].data) 
+      ? `Completed Tasks: ${taskStatusData.datasets[0].data[0]}, In Progress: ${taskStatusData.datasets[0].data[1]}, Overdue Tasks: ${taskStatusData.datasets[0].data[2]}`
+      : 'Task data is unavailable';
+
     const analyticsContext = `
       Study Analytics Report:
       - Overall Progress: ${progressPercentage}% completion rate
-      - Daily Study Time (minutes): ${dailyData.datasets[0].data.join(', ')}
+      - Daily Study Time (minutes): ${dailyTime}
       - Task Distribution:
-        * Completed Tasks: ${taskStatusData.datasets[0].data[0]}
-        * In Progress: ${taskStatusData.datasets[0].data[1]}
-        * Overdue Tasks: ${taskStatusData.datasets[0].data[2]}
+        ${tasks}
     `;
 
     const prompt = `As an educational analytics expert, analyze this study data and provide personalized feedback in the following format:
@@ -81,7 +84,7 @@ export async function analyzeAnalytics(dailyData, taskStatusData, progressPercen
     const response = await result.response;
     return response.text();
   } catch (error) {
-    console.error('Gemini API Error:', error);
+    console.error('Error analyzing analytics:', error);
     throw new Error('Failed to analyze analytics data');
   }
-}
+};

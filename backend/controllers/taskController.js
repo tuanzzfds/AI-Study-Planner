@@ -56,6 +56,9 @@ exports.getAllTasks = async (req, res) => {
     try {
       const userId = req.user.id;
       const { taskId } = req.params;
+      if (!mongoose.Types.ObjectId.isValid(taskId)) {
+        return res.status(400).json({ message: 'Invalid Task ID format.' });
+      }
   
       const task = await Task.findOne({ _id: taskId, user: userId });
   
@@ -74,6 +77,9 @@ exports.updateTask = async (req, res) => {
   try {
     const userId = req.user.id;
     const { taskId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(taskId)) {
+      return res.status(400).json({ message: 'Invalid Task ID format.' });
+    }
     const { title, description, priority, estimatedTime, status, startDate, endDate  } = req.body;
 
     const task = await Task.findOne({ _id: taskId, user: userId });
@@ -107,7 +113,9 @@ exports.deleteTask = async (req, res) => {
     try {
       const userId = req.user.id;
       const { taskId } = req.params;
-  
+      if (!mongoose.Types.ObjectId.isValid(taskId)) {
+        return res.status(400).json({ message: 'Invalid Task ID format.' });
+      }
       // Find the task by ID and ensure it belongs to the user
       const task = await Task.findOne({ _id: taskId, user: userId });
   
@@ -163,6 +171,9 @@ exports.updateTaskStatus = async (req, res) => {
   try {
     const userId = req.user.id;
     const { taskId } = req.params;
+    if (!mongoose.Types.ObjectId.isValid(taskId)) {
+      return res.status(400).json({ message: 'Invalid Task ID format.' });
+    }
     const { status } = req.body;
 
     // Validate the new status
