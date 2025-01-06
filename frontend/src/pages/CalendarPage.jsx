@@ -120,7 +120,10 @@ const CalendarPage = () => {
   }, [isTimerRunning, selectedEvent]);
 
   const handleStartTimer = () => {
-    // Removed the status check to allow timer for any task
+    if (selectedEvent.status === 'Completed') {
+      alert('Cannot start timer for a completed task.');
+      return;
+    }
     setRemainingTime(timerDuration * 60);
     setIsTimerRunning(true);
   };
@@ -353,7 +356,7 @@ const CalendarPage = () => {
               <p>
                 <strong>End:</strong> {selectedEvent.end.toLocaleString()}
               </p>
-              {!isTimerRunning && !isBreak && (
+              {!isTimerRunning && !isBreak && selectedEvent.status !== 'Completed' && (
                 <>
                   <h5>Start Focus Timer</h5>
                   <>
